@@ -1,0 +1,18 @@
+{
+  "ignore": [
+    "known-properties",
+    "box-model",
+    "adjoining-classes",
+    "universal-selector",
+    "unqualified-attributes",
+    "overqualified-elements",
+    "duplicate-background-images",
+    "floats",
+    "font-sizes",
+    "ids",
+    "important",
+    "outline-none",
+    "qualified-headings",
+    "unique-headings"
+  ]
+} 
