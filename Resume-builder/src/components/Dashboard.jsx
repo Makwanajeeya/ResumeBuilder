@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { Download } from '@mui/icons-material';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -34,6 +35,66 @@ const Dashboard = () => {
       console.error('Error deleting resume:', error);
     }
   }, [resumes]);
+
+  const handleDownloadResume = useCallback((resume) => {
+    // Create a new window for printing
+    const printWindow = window.open('', '_blank');
+    
+    // Write the resume content to the new window
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>${resume.title}</title>
+          <style>
+            @media print {
+              body {
+                margin: 0;
+                padding: 0;
+              }
+              .resume-container {
+                width: 210mm;
+                height: 297mm;
+                margin: 0;
+                padding: 20mm;
+                box-sizing: border-box;
+              }
+            }
+          </style>
+        </head>
+        <body>
+          <div class="resume-container">
+            <h1>${resume.data.personalInfo.name}</h1>
+            <p>${resume.data.personalInfo.email}</p>
+            <p>${resume.data.personalInfo.phone}</p>
+            <p>${resume.data.personalInfo.location}</p>
+            
+            <h2>Education</h2>
+            <p>${resume.data.education.degree}</p>
+            <p>${resume.data.education.institution}</p>
+            <p>${resume.data.education.dates}</p>
+            
+            <h2>Experience</h2>
+            <p>${resume.data.experience.jobTitle}</p>
+            <p>${resume.data.experience.company}</p>
+            <p>${resume.data.experience.dates}</p>
+            <p>${resume.data.experience.description}</p>
+            
+            <h2>Skills</h2>
+            <ul>
+              ${resume.data.skills.map(skill => `<li>${skill}</li>`).join('')}
+            </ul>
+          </div>
+        </body>
+      </html>
+    `);
+    
+    // Wait for the content to load before printing
+    printWindow.document.close();
+    printWindow.onload = function() {
+      printWindow.print();
+    };
+  }, []);
 
   if (isLoading) {
     return (
@@ -106,6 +167,13 @@ const Dashboard = () => {
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                           </svg>
+                        </button>
+                        <button 
+                          onClick={() => handleDownloadResume(resume)}
+                          className="p-2 text-white/80 hover:text-[#FFD700] transition-colors"
+                          aria-label="Download resume"
+                        >
+                          <Download className="w-5 h-5" />
                         </button>
                         <button 
                           onClick={() => handleDeleteResume(resume.createdAt)}
